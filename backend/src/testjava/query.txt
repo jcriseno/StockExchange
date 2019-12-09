@@ -1,0 +1,30 @@
+CREATE TABLE user(
+    user_id INT (11) AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR (100),
+    funds DOUBLE(8,2)
+);
+
+CREATE TABLE company(
+    company_ticker VARCHAR (25) PRIMARY KEY,
+    company_name VARCHAR (100)
+);
+
+CREATE TABLE transactions(
+    transaction_id INT (11) AUTO_INCREMENT PRIMARY KEY,
+    time TIMESTAMP,
+    quantity INT,
+    buying_price DOUBLE(8,2),
+    user_id INT,
+    company_ticker VARCHAR(25),
+    FOREIGN KEY (user_id) REFERENCES user (user_id),
+    FOREIGN KEY (company_ticker) REFERENCES company (company_ticker)
+);
+
+CREATE TABLE stock(
+    stock_id INT (11) AUTO_INCREMENT PRIMARY KEY,
+    quantity INT,
+    user_id INT,
+    company_ticker VARCHAR(25),
+    FOREIGN KEY (user_id) REFERENCES user (user_id),
+    FOREIGN KEY (company_ticker) REFERENCES company (company_ticker)
+);
