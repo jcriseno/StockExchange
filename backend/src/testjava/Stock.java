@@ -11,7 +11,7 @@ public class Stock {
     }
 
     @DatabaseField(generated = true)
-    private int id;
+    private int stock_id;
 
     @DatabaseField(foreign = true)
     private int account_id;

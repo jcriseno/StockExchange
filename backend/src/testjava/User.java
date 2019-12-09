@@ -7,13 +7,10 @@ import com.j256.ormlite.table.DatabaseTable;
 public class User {
  
        @DatabaseField(generatedId = true)
-    private int id;
+    private int user_id;
  
        @DatabaseField
     private String username;
- 
-       @DatabaseField
-    private String email;
 
        @DatabaseField
        private double funds;

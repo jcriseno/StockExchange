@@ -11,10 +11,10 @@ public class Transactions {
     }
 
     @DatabaseField(generatedId = true)
-    private int id;
+    private int transaction_id;
 
     @DatabaseField(foreign = true)
-    private int transaction_id;
+    private int user_id;
 
     @DatabaseField(foreign = true)
     private int company_id;

@@ -11,7 +11,7 @@ public class Company {
     }
 
     @DatabaseField(id = true)
-    private String ticker;
+    private String company_id;
 
     @DatabaseField
     private String name;
