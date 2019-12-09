@@ -14,6 +14,9 @@ public class User {
  
        @DatabaseField
     private String email;
+
+       @DatabaseField
+       private double funds;
  
        public User() {
         // ORMLite needs a no-arg constructor
@@ -38,4 +41,8 @@ public class User {
        public void setEmail(String email) {
         this.email = email;
     }
+
+    public double getFunds() {return this.funds;}
+
+    public void setFunds(double funds) {this.funds = funds;}
 }
