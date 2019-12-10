@@ -23,6 +23,9 @@ public class JavaServer {
     }
     
     private static void postCreateSQL(ConnectionSource connectionSource, Dao<User, String> userDao) throws SQLException {
+        get("/test", (request, response) -> {
+            return "test passed!";
+        });
         post("/users", (request, response) -> {
             String username = request.queryParams("username");
 
