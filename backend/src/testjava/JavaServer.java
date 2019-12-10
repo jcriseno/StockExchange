@@ -17,7 +17,7 @@ public class JavaServer {
         ConnectionSource connectionSource = new JdbcConnectionSource(databaseUrl);
         ((JdbcConnectionSource) connectionSource).setUsername("root");
         ((JdbcConnectionSource) connectionSource).setPassword("lart2456");
-        ((JdbcConnectionSource) connectionSource).setUrl("localhost");
+        //((JdbcConnectionSource) connectionSource).setUrl("localhost");
 
         TableUtils.createTableIfNotExists(connectionSource, User.class);
         Dao<User, String> userDao = DaoManager.createDao(connectionSource, User.class);
