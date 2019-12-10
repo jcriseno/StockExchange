@@ -12,7 +12,7 @@ public class JavaServer {
     public static void main(String[] args) throws SQLException {
         port(80);
 
-        String databaseUrl = "jdbc:stockexchange://ec2-184-72-87-247.compute-1.amazonaws.com";
+        String databaseUrl = "jdbc:mysql://ec2-184-72-87-247.compute-1.amazonaws.com/stockexchange";
 
         ConnectionSource connectionSource = new JdbcConnectionSource(databaseUrl);
         ((JdbcConnectionSource) connectionSource).setUsername("myuser");
