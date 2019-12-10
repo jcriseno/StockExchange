@@ -10,6 +10,11 @@ import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 
+import testjava.User;
+import testjava.Stock;
+import testjava.Transactions;
+import testjava.Company;
+
 import spark.Request;
 import spark.Response;
 import spark.Route;
