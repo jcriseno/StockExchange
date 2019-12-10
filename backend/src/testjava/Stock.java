@@ -1,5 +1,3 @@
-package testjava;
-
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
@@ -10,7 +8,7 @@ public class Stock {
 
     }
 
-    @DatabaseField(generated = true)
+    @DatabaseField(generatedId = true)
     private int stock_id;
 
     @DatabaseField(foreign = true)
@@ -23,12 +21,12 @@ public class Stock {
     private int quantity;
 
 
-    public int getId() {
-        return id;
+    public int getStock_id() {
+        return stock_id;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setStock_id(int id) {
+        this.stock_id = id;
     }
 
     public int getAccount_id() {

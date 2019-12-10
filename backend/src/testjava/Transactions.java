@@ -1,7 +1,7 @@
-package testjava;
-
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
+
+import java.sql.Timestamp;
 
 @DatabaseTable(tableName = "transactions")
 public class Transactions {
@@ -25,17 +25,15 @@ public class Transactions {
     @DatabaseField
     private int quantity;
 
-    @Database
+    @DatabaseField
     private double buying_price;
 
     // GETTERS AND SETTERS
 
-    public int getId() {
-        return id;
-    }
+    public int getUser_id() { return user_id; }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setUser_id(int id) {
+        this.user_id = id;
     }
 
     public int getTransaction_id() {

@@ -1,5 +1,3 @@
-package testjava;
-
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
@@ -11,7 +9,7 @@ public class Company {
     }
 
     @DatabaseField(id = true)
-    private String company_id;
+    private String ticker;
 
     @DatabaseField
     private String name;
