@@ -1,9 +1,9 @@
 # StockExchange (BigMoney)
 This is an MThree Project.<br>
 #BigMoney
-I need more coffee
-#big
-#money
+I need more coffee<br>
+#big<br>
+#money<br>
 <br>
 <br>
 hashtagbigmoney
