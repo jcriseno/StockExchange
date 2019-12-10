@@ -1,5 +1,3 @@
-package testjava;
-
 import static spark.Spark.*;
 
 import java.sql.SQLException;
@@ -9,30 +7,30 @@ import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
-
-import spark.Request;
-import spark.Response;
-import spark.Route;
+import javafx.util.Pair;
 
 public class JavaServer {
     public static void main(String[] args) throws SQLException {
-    	String databaseUrl = "jdbc:mysql://localhost/spark";
-    	 
-    	ConnectionSource connectionSource = new JdbcConnectionSource(databaseUrl);
-    	((JdbcConnectionSource)connectionSource).setUsername("spark");
-    	((JdbcConnectionSource)connectionSource).setPassword("spark");
-		    
-    	TableUtils.createTableIfNotExists(connectionSource, User.class);
-    	Dao<User, String> userDao = DaoManager.createDao(connectionSource, User.class);
-    	Dao<Transactions, String> txnDao = DaoManager.createDao(connectionSource, Transactions.class);
-    	Dao<>
+        port(80);
 
+        String databaseUrl = "jdbc:mysql://ec2-184-72-87-247.compute-1.amazonaws.com";
 
-    	postCreateSQL(connectionSource, userDao);
-    	postCreateTxn(connectionSource, txnDao);
+        ConnectionSource connectionSource = new JdbcConnectionSource(databaseUrl);
+        ((JdbcConnectionSource) connectionSource).setUsername("spark");
+        ((JdbcConnectionSource) connectionSource).setPassword("spark");
+
+        TableUtils.createTableIfNotExists(connectionSource, User.class);
+        Dao<User, String> userDao = DaoManager.createDao(connectionSource, User.class);
+        Dao<Transactions, String> txnDao = DaoManager.createDao(connectionSource, Transactions.class);
+
+        postCreateSQL(connectionSource, userDao);
+        postQueryTxn(connectionSource, txnDao);
     }
-    
+
     private static void postCreateSQL(ConnectionSource connectionSource, Dao<User, String> userDao) throws SQLException {
+        get("/test", (request, response) -> {
+            return "test passed!";
+        });
         post("/users", (request, response) -> {
             String username = request.queryParams("username");
 
@@ -43,32 +41,36 @@ public class JavaServer {
 
             response.status(201); // 201 Created
             return "done! 201";
-         });
+        });
 
-        get(new Route("/retrieveUser/:id") {
-            @Override
-            public Object handle(Request request, Response response) {
-                User user = null;
-                try {
-                    user = userDao.queryForId(request.params(":id"));
-                } catch (SQLException e) {
-                }
-                if (user != null) {
-                    return "User: " + user;
-                } else {
-                    response.status(404); // 404 Not found
-                    return "404: User not found";
-                }
+        get("/retrieveUser/:id", (request, response) -> {
+            User user = null;
+            try {
+                user = userDao.queryForId(request.params(":id"));
+            } catch (SQLException e) {
+            }
+            if (user != null) {
+                return "User: " + user;
+            } else {
+                response.status(404); // 404 Not found
+                return "404: User not found";
             }
         });
     }
 
-    private void postCreateTxn(ConnectionSource connectionSource, Dao<Transactions, String> userDao) throws SQLException {
-        get(new Route("/postTransaction")) {
-            @Override
-            public Object handle(Request request, Response response) {
-                Transaction transaction = null;
+    private static void postQueryTxn(ConnectionSource connectionSource, Dao<Transactions, String> txnDao) throws SQLException {
+        get("/getTransaction/:id", (request, response) -> {
+            Transactions txn = null;
+            try {
+                txn = txnDao.queryForId(request.params(":id"));
+            } catch (SQLException e) {
             }
-        }
+            if (txn != null) {
+                return "Transaction: " + txn;
+            } else {
+                response.status(404); // 404 Not found
+                return "404: User not found";
+            }
+        });
     }
 }

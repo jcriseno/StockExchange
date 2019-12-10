@@ -7,10 +7,12 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="stockexchange" />
+        <module name="testjava" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="stockexchange" target="11" />
+      <module name="testjava" target="11" />
     </bytecodeTargetLevel>
   </component>
 </project>
