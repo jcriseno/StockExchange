@@ -1,3 +1,4 @@
+#To initialize the tables of the database
 CREATE TABLE user(
     user_id INT (11) AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR (100),
@@ -28,3 +29,22 @@ CREATE TABLE stock(
     FOREIGN KEY (user_id) REFERENCES user (user_id),
     FOREIGN KEY (company_ticker) REFERENCES company (company_ticker)
 );
+
+#To see what stocks each user has:
+SELECT
+    username,
+    funds,
+    user.user_id,
+    stock.user_id,
+    company_ticker,
+    quantity
+FROM
+    user
+        INNER JOIN
+    stock ON stock.user_id = user.user_id;
+
+#To see what stocks are available
+SELECT * FROM stocks WHERE user_id = NULL;
+
+#To see what transactions have occurred
+SELECT * FROM transactions;
