@@ -15,8 +15,8 @@ public class JavaServer {
         String databaseUrl = "jdbc:mysql://ec2-184-72-87-247.compute-1.amazonaws.com";
 
         ConnectionSource connectionSource = new JdbcConnectionSource(databaseUrl);
-        ((JdbcConnectionSource) connectionSource).setUsername("root");
-        ((JdbcConnectionSource) connectionSource).setPassword("lart2456");
+        ((JdbcConnectionSource) connectionSource).setUsername("myuser");
+        ((JdbcConnectionSource) connectionSource).setPassword("mypassword");
 
         TableUtils.createTableIfNotExists(connectionSource, User.class);
         Dao<User, String> userDao = DaoManager.createDao(connectionSource, User.class);
