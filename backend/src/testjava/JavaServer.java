@@ -10,6 +10,8 @@ import com.j256.ormlite.table.TableUtils;
 
 public class JavaServer {
     public static void main(String[] args) throws SQLException {
+        port(80);
+
     	String databaseUrl = "jdbc:mysql://localhost/spark";
     	 
     	ConnectionSource connectionSource = new JdbcConnectionSource(databaseUrl);
