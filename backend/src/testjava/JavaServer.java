@@ -15,53 +15,30 @@ import spark.Response;
 import spark.Route;
 
 public class JavaServer {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SQLException {
     	String databaseUrl = "jdbc:mysql://localhost/spark";
     	 
-    	ConnectionSource connectionSource;
-		try {
-			connectionSource = new JdbcConnectionSource(databaseUrl);
-		    ((JdbcConnectionSource)connectionSource).setUsername("spark");
-		    ((JdbcConnectionSource)connectionSource).setPassword("spark");
+    	ConnectionSource connectionSource = new JdbcConnectionSource(databaseUrl);
+    	((JdbcConnectionSource)connectionSource).setUsername("spark");
+    	((JdbcConnectionSource)connectionSource).setPassword("spark");
 		    
-			TableUtils.createTableIfNotExists(connectionSource, User.class);
-			Dao<User, String> userDao = DaoManager.createDao(connectionSource, User.class);
-			
-			postCreateSQL(connectionSource, userDao);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+    	TableUtils.createTableIfNotExists(connectionSource, User.class);
+    	Dao<User, String> userDao = DaoManager.createDao(connectionSource, User.class);
+
+    	postCreateSQL(connectionSource, userDao);
     }
     
-    private static void postCreateSQL(ConnectionSource connectionSource, Dao<User, String> userDao) {
-	   
-        get("/hello", (req, res) -> "Hello World");
-        get("/users/:id", new Route() {
-        	@Override
-        	public Object handle(Request req, Response res) {
-    			return "test";
-    		}
-        });
-        post("/users", new Route() {
-            @Override
-            public Object handle(Request request, Response response) {
-                String username = request.queryParams("username");
-                String email = request.queryParams("email");
-                
-                User user = new User();
-                user.setUsername(username);
-                user.setEmail(email);
-         
-                try{
-                	userDao.create(user);
-                } catch (SQLException e) {
-                	e.printStackTrace();
-                }
-         
-                response.status(201); // 201 Created
-                return "done! 201";
-             }
-        });
+    private static void postCreateSQL(ConnectionSource connectionSource, Dao<User, String> userDao) throws SQLException {
+        post("/users", (request, response) -> {
+            String username = request.queryParams("username");
+
+            User user = new User();
+            user.setUsername(username);
+
+            userDao.create(user);
+
+            response.status(201); // 201 Created
+            return "done! 201";
+         });
     }
 }

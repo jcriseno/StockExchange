@@ -20,24 +20,15 @@ public class User {
      }
  
        public int getId() {
-        return this.id;
+        return this.user_id;
     }
  
        public String getUsername() {
             return this.username;
     }
  
-       public void setUsername(String username) {
-        this.username = username;
-    }
- 
-       public String getEmail() {
-        return email;
-    }
- 
-       public void setEmail(String email) {
-        this.email = email;
-    }
+       public void setUsername(String username) { this.username = username; }
+
 
     public double getFunds() {return this.funds;}
 
