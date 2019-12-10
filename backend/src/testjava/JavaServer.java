@@ -7,7 +7,6 @@ import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
-import javafx.util.Pair;
 
 public class JavaServer {
     public static void main(String[] args) throws SQLException {
