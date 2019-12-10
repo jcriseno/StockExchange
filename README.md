@@ -1,4 +1,4 @@
-# StockExchange
+# StockExchange (BigMoney)
 This is an MThree Project.<br>
 #BigMoney
 <br>
@@ -16,5 +16,4 @@ hashtag bigmoney
 <br>
 <br>
 <br>
-
 bigmoney
