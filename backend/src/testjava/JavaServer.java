@@ -9,28 +9,36 @@ import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 
 public class JavaServer {
-    public static void main(String[] args) throws SQLException {
+    private static String response = "test passed!";
+
+    public static void main(String[] args) {
         port(80);
+        get("/test", (request, response) -> {
+            return response;
+        });
 
         String databaseUrl = "jdbc:mysql://ec2-184-72-87-247.compute-1.amazonaws.com/stockexchange";
 
-        ConnectionSource connectionSource = new JdbcConnectionSource(databaseUrl);
-        ((JdbcConnectionSource) connectionSource).setUsername("root");
-        ((JdbcConnectionSource) connectionSource).setPassword("lart2456");
-        //((JdbcConnectionSource) connectionSource).setUrl("localhost");
+        ConnectionSource connectionSource = null;
+        Dao<User, String> userDao;
+        Dao<Transactions, String> txnDao;
+        try {
+            connectionSource = new JdbcConnectionSource(databaseUrl);
+            ((JdbcConnectionSource) connectionSource).setUsername("root");
+            ((JdbcConnectionSource) connectionSource).setPassword("lart2456");
 
-        TableUtils.createTableIfNotExists(connectionSource, User.class);
-        Dao<User, String> userDao = DaoManager.createDao(connectionSource, User.class);
-        Dao<Transactions, String> txnDao = DaoManager.createDao(connectionSource, Transactions.class);
+            TableUtils.createTableIfNotExists(connectionSource, User.class);
+            userDao = DaoManager.createDao(connectionSource, User.class);
+            txnDao = DaoManager.createDao(connectionSource, Transactions.class);
 
-        postCreateSQL(connectionSource, userDao);
-        postQueryTxn(connectionSource, txnDao);
+            postCreateSQL(connectionSource, userDao);
+            postQueryTxn(connectionSource, txnDao);
+        } catch (SQLException e) {
+            response = e.getStackTrace().toString();
+        }
     }
 
     private static void postCreateSQL(ConnectionSource connectionSource, Dao<User, String> userDao) throws SQLException {
-        get("/test", (request, response) -> {
-            return "test passed!";
-        });
         post("/users", (request, response) -> {
             String username = request.queryParams("username");
 
