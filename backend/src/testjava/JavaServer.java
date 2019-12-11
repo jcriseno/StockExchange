@@ -14,12 +14,17 @@ import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
+import spark.Filter;
 
 public class JavaServer {
     private static String responseTest = "test passed!";
 
     public static void main(String[] args) {
         port(8000);
+        after((Filter) (request, response) -> {
+            response.header("Access-Control-Allow-Origin", "*");
+            response.header("Access-Control-Allow-Methods", "GET, POST");
+        });
         get("/test", (request, response) -> {
             return responseTest;
         });
