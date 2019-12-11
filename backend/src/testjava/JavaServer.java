@@ -21,6 +21,13 @@ public class JavaServer {
     private static String responseTest = "test passed!";
 
     public static void main(String[] args) {
+        initExceptionHandler((e) -> {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            e.printStackTrace(pw);
+            responseTest = sw.toString();
+        });
+
         port(8000);
         after((Filter) (request, response) -> {
             response.header("Access-Control-Allow-Origin", "*");
@@ -168,12 +175,9 @@ public class JavaServer {
             String stockID = request.params(":stock");
             responseTest += "<br>GOt params " + stockID;
             QueryBuilder<Stock, String> qbStock = stockDao.queryBuilder();
-            responseTest += "<br>build query " + stockID;
-            Where<Stock, String> whereStock = qbStock.where();
-            responseTest += "<br>where query " + stockID;
-            whereStock = whereStock.eq("stock_id", stockID);
+            qbStock.where().eq("stock_id", stockID);
             responseTest += "<br>set up query " + stockID;
-            Stock results = stockDao.queryForFirst(whereStock.prepare());
+            Stock results = stockDao.queryForFirst(qbStock.prepare());
 
             responseTest += "<br>Requested Stock for Stock ID " + stockID;
 
