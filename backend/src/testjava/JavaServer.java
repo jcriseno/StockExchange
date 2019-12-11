@@ -153,9 +153,12 @@ public class JavaServer {
 
         get("/retrieveStock/:stock", (request, response) -> {
             String stockID = request.params(":stock");
-            QueryBuilder<Stock, String> qbUser = stockDao.queryBuilder();
-            qbUser.where().eq("stock_id", stockID);
-            Stock results = stockDao.queryForFirst(qbUser.prepare());
+            responseTest += "<br>GOt params " + stockID;
+            QueryBuilder<Stock, String> qbStock = stockDao.queryBuilder();
+            responseTest += "<br>build query " + stockID;
+            qbStock.where().eq("stock_id", stockID);
+            responseTest += "<br>set up query " + stockID;
+            Stock results = stockDao.queryForFirst(qbStock.prepare());
 
             responseTest += "<br>Requested Stock for Stock ID " + stockID;
 
