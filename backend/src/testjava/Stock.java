@@ -11,11 +11,11 @@ public class Stock {
     @DatabaseField(generatedId = true)
     private int stock_id;
 
-    @DatabaseField(foreign = true, columnName = "user_id")
-    private User user;
+    @DatabaseField(columnName = "user_id")
+    private String user;
 
-    @DatabaseField(foreign = true, columnName = "ticker")
-    private Company company;
+    @DatabaseField(columnName = "ticker")
+    private String company;
 
     @DatabaseField
     private int quantity;
@@ -29,19 +29,19 @@ public class Stock {
         this.stock_id = id;
     }
 
-    public User getUser() {
+    public String getUser() {
         return user;
     }
 
-    public void setUser(User user) {
+    public void setUser(String user) {
         this.user = user;
     }
 
-    public Company getCompany() {
+    public String getCompany() {
         return this.company;
     }
 
-    public void setCompany(Company company){
+    public void setCompany(String company){
         this.company = company;
     }
 

@@ -113,11 +113,13 @@ public class JavaServer {
             String ticker = request.queryParams("company");
             String quantity = request.queryParams("quantity");
 
-            try {
-                stockDao.updateRaw("INSERT INTO stocks(stock_id, user_id, quantity, ticker) VALUES (stockID, userID, quantity, ticker)");
-            } catch (SQLException e) {
-            }
+            Stock stock = new Stock();
+            stock.setUser(userID);
+            stock.setStock_id(Integer.parseInt(stockID));
+            stock.setCompany(ticker);
+            stock.setQuantity(Integer.parseInt(quantity));
 
+            stockDao.create(stock);
 
             response.status(201); // 201 Created
             return "done! 201";
