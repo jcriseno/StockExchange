@@ -14,7 +14,7 @@ public class Stock {
     @DatabaseField(columnName = "user_id")
     private String user;
 
-    @DatabaseField(columnName = "ticker")
+    @DatabaseField(columnName = "company_ticker")
     private String company;
 
     @DatabaseField
