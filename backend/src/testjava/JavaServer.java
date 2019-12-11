@@ -3,9 +3,11 @@ import static spark.Spark.*;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.SQLException;
+import java.util.*;
 
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
+import com.j256.ormlite.dao.GenericRawResults;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
@@ -14,7 +16,7 @@ public class JavaServer {
     private static String responseTest = "test passed!";
 
     public static void main(String[] args) {
-        port(80);
+        port(8000);
         get("/test", (request, response) -> {
             return responseTest;
         });
@@ -24,6 +26,8 @@ public class JavaServer {
         ConnectionSource connectionSource = null;
         Dao<User, String> userDao;
         Dao<Transactions, String> txnDao;
+        Dao<Stock, String> stockDao;
+        Dao<Company, String> comDao;
         try {
             connectionSource = new JdbcConnectionSource(databaseUrl);
             ((JdbcConnectionSource) connectionSource).setUsername("root");
@@ -32,9 +36,13 @@ public class JavaServer {
             TableUtils.createTableIfNotExists(connectionSource, User.class);
             userDao = DaoManager.createDao(connectionSource, User.class);
             txnDao = DaoManager.createDao(connectionSource, Transactions.class);
+            stockDao = DaoManager.createDao(connectionSource, Stock.class);
+            comDao = DaoManager.createDao(connectionSource, Company.class);
 
-            postCreateSQL(connectionSource, userDao);
-            postQueryTxn(connectionSource, txnDao);
+            postGetUser(connectionSource, userDao);
+            postGetTxn(connectionSource, txnDao);
+            postGetCom(connectionSource, comDao);
+            postGetStock(connectionSource, stockDao);
         } catch (SQLException e) {
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
@@ -43,12 +51,15 @@ public class JavaServer {
         }
     }
 
-    private static void postCreateSQL(ConnectionSource connectionSource, Dao<User, String> userDao) throws SQLException {
+    private static void postGetUser(ConnectionSource connectionSource, Dao<User, String> userDao) throws SQLException {
         post("/users", (request, response) -> {
             String username = request.queryParams("username");
+            String deposit = request.queryParams("funds");
+            Double funds = Double.valueOf(deposit);
 
             User user = new User();
             user.setUsername(username);
+            user.setFunds(funds);
 
             userDao.create(user);
 
@@ -56,14 +67,18 @@ public class JavaServer {
             return "done! 201";
         });
 
-        get("/retrieveUser/:id", (request, response) -> {
-            User user = null;
-            try {
-                user = userDao.queryForId(request.params(":id"));
-            } catch (SQLException e) {
-            }
-            if (user != null) {
-                return "User: " + user;
+        get("/retrieveUserID/:user", (request, response) -> {
+            String hold = ":user";
+            GenericRawResults<String[]> results;
+            results = userDao.queryRaw("SELECT user_id FROM users WHERE username = " + hold);
+
+            List<String[]> resArray = results.getResults();
+            String[] fin = resArray.get(0);
+
+
+            if (fin[0] != null) {
+                response.status(201);
+                return fin[0];
             } else {
                 response.status(404); // 404 Not found
                 return "404: User not found";
@@ -71,7 +86,7 @@ public class JavaServer {
         });
     }
 
-    private static void postQueryTxn(ConnectionSource connectionSource, Dao<Transactions, String> txnDao) throws SQLException {
+    private static void postGetTxn(ConnectionSource connectionSource, Dao<Transactions, String> txnDao) throws SQLException {
         get("/getTransaction/:id", (request, response) -> {
             Transactions txn = null;
             try {
@@ -84,6 +99,28 @@ public class JavaServer {
                 response.status(404); // 404 Not found
                 return "404: User not found";
             }
+        });
+    }
+
+    private static void postGetCom(ConnectionSource connectionSource, Dao<Company, String> comDao) throws SQLException {
+
+    }
+
+    private static void postGetStock(ConnectionSource connectionSource, Dao<Stock, String> stockDao) throws SQLException {
+        post("/purchase", (request, response) -> {
+            String userID = request.queryParams("user");
+            String stockID = request.queryParams("stock_id");
+            String ticker = request.queryParams("company");
+            String quantity = request.queryParams("quantity");
+
+            try {
+                stockDao.updateRaw("INSERT INTO stocks(stock_id, user_id, quantity, ticker) VALUES (stockID, userID, quantity, ticker)");
+            } catch (SQLException e) {
+            }
+
+
+            response.status(201); // 201 Created
+            return "done! 201";
         });
     }
 }
