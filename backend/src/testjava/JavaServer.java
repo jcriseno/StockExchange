@@ -9,6 +9,7 @@ import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.dao.GenericRawResults;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
+import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 
@@ -68,20 +69,21 @@ public class JavaServer {
         });
 
         get("/retrieveUserID/:user", (request, response) -> {
-            String hold = ":user";
+            String hold = request.params(":user");
             GenericRawResults<String[]> results;
             results = userDao.queryRaw("SELECT user_id FROM users WHERE username = " + hold);
 
             List<String[]> resArray = results.getResults();
             String[] fin = resArray.get(0);
 
+            responseTest += "<br>Requested User ID for Username " + hold;
 
             if (fin[0] != null) {
                 response.status(201);
                 return fin[0];
             } else {
                 response.status(404); // 404 Not found
-                return "404: User not found";
+                return "Error: User " + hold + " not found";
             }
         });
     }
@@ -108,9 +110,9 @@ public class JavaServer {
 
     private static void postGetStock(ConnectionSource connectionSource, Dao<Stock, String> stockDao) throws SQLException {
         post("/purchase", (request, response) -> {
-            String userID = request.queryParams("user");
+            String userID = request.queryParams("user_id");
             String stockID = request.queryParams("stock_id");
-            String ticker = request.queryParams("company");
+            String ticker = request.queryParams("ticker");
             String quantity = request.queryParams("quantity");
 
             try {
