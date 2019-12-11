@@ -72,7 +72,8 @@ public class JavaServer {
             userDao.create(user);
 
             response.status(201); // 201 Created
-            return "done! 201";
+            ObjectMapper userMap = new ObjectMapper();
+            return userMap.writeValueAsString(user);
         });
 
         get("/retrieveUser/:user", (request, response) -> {
