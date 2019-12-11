@@ -130,6 +130,23 @@ public class JavaServer {
                 return "404: User not found";
             }
         });
+
+        get("/getCoTransaction/:company_ticker", (request, response) -> {
+            String company_ticker = ":company_ticker";
+
+            QueryBuilder<Transactions, String> qbTxn = txnDao.queryBuilder();
+            List<Transactions> results = qbTxn.where().eq("company_ticker", company_ticker).query();
+
+            if (results != null){
+                response.status(202);
+                ObjectMapper txnMap = new ObjectMapper();
+                return txnMap.writeValueAsString(results);
+            }
+            else{
+                response.status(404);
+                return "404: Company_ticker not found";
+            }
+        });
     }
 
     private static void postGetCom(ConnectionSource connectionSource, Dao<Company, String> comDao) throws SQLException {
@@ -219,4 +236,9 @@ public class JavaServer {
             }
         });
     }
+
+
+
+
+
 }
