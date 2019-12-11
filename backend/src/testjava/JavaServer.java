@@ -1,5 +1,7 @@
 import static spark.Spark.*;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.sql.SQLException;
 
 import com.j256.ormlite.dao.Dao;
@@ -9,12 +11,12 @@ import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 
 public class JavaServer {
-    private static String response = "test passed!";
+    private static String responseTest = "test passed!";
 
     public static void main(String[] args) {
         port(80);
         get("/test", (request, response) -> {
-            return response;
+            return responseTest;
         });
 
         String databaseUrl = "jdbc:mysql://ec2-184-72-87-247.compute-1.amazonaws.com/stockexchange";
@@ -34,7 +36,10 @@ public class JavaServer {
             postCreateSQL(connectionSource, userDao);
             postQueryTxn(connectionSource, txnDao);
         } catch (SQLException e) {
-            response = e.getStackTrace().toString();
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            e.printStackTrace(pw);
+            responseTest = sw.toString();
         }
     }
 
