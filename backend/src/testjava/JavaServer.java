@@ -134,7 +134,7 @@ public class JavaServer {
         get("/retrieveCompany/:ticker", (request, response) -> {
             String ticker = request.params(":ticker");
             QueryBuilder<Company, String> qbCompany = comDao.queryBuilder();
-            qbCompany.where().eq("ticker", ticker);
+            qbCompany.where().eq("company_ticker", ticker);
             Company results = comDao.queryForFirst(qbCompany.prepare());
 
             responseTest += "<br>Requested Company for Company Ticker " + ticker;
@@ -163,20 +163,20 @@ public class JavaServer {
             stock.setCompany(ticker);
             stock.setQuantity(Integer.parseInt(quantity));
 
-            stockDao.create(stock);
+            stockDao.createOrUpdate(stock);
 
             response.status(201); // 201 Created
             ObjectMapper stockMap = new ObjectMapper();
             return stockMap.writeValueAsString(stock);
         });
 
-        get("/getStock", (request, response) -> {
+        get("/retrieveStocksByTicker/:user_id/:ticker", (request, response) -> {
             String userID = request.queryParams("user_id");
             String ticker = request.queryParams("ticker");
 
             QueryBuilder<Stock, String> qbStock = stockDao.queryBuilder();
             qbStock.where().eq("user_id", userID).and()
-            .eq("ticker", ticker);
+            .eq("company_ticker", ticker);
             Stock results = stockDao.queryForFirst(qbStock.prepare());
 
             return results;
@@ -184,10 +184,8 @@ public class JavaServer {
 
         get("/retrieveStock/:stock", (request, response) -> {
             String stockID = request.params(":stock");
-            responseTest += "<br>GOt params " + stockID;
             QueryBuilder<Stock, String> qbStock = stockDao.queryBuilder();
             qbStock.where().eq("stock_id", stockID);
-            responseTest += "<br>set up query " + stockID;
             List<Stock> results = stockDao.query(qbStock.prepare());
 
             responseTest += "<br>Requested Stock for Stock ID " + stockID;
