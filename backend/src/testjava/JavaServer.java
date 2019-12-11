@@ -22,6 +22,8 @@ public class JavaServer {
 
     public static void main(String[] args) {
         initExceptionHandler((e) -> {
+            e.printStackTrace();
+
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
             e.printStackTrace(pw);
