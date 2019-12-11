@@ -78,7 +78,7 @@ public class JavaServer {
 
             if (results != null) {
                 response.status(201);
-                return results.getId();
+                return results.toString();
             } else {
                 response.status(404); // 404 Not found
                 return "Error: User " + hold + " not found";
@@ -94,6 +94,7 @@ public class JavaServer {
             } catch (SQLException e) {
             }
             if (txn != null) {
+                response.status(202);
                 return "Transaction: " + txn;
             } else {
                 response.status(404); // 404 Not found
@@ -112,6 +113,7 @@ public class JavaServer {
             String stockID = request.queryParams("stock_id");
             String ticker = request.queryParams("ticker");
             String quantity = request.queryParams("quantity");
+
 
             try {
                 stockDao.updateRaw("INSERT INTO stocks(stock_id, user_id, quantity, ticker) VALUES (stockID, userID, quantity, ticker)");
