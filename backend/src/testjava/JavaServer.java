@@ -12,6 +12,7 @@ import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.dao.GenericRawResults;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.Where;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 import spark.Filter;
@@ -156,9 +157,11 @@ public class JavaServer {
             responseTest += "<br>GOt params " + stockID;
             QueryBuilder<Stock, String> qbStock = stockDao.queryBuilder();
             responseTest += "<br>build query " + stockID;
-            qbStock.where().eq("stock_id", stockID);
+            Where<Stock, String> whereStock = qbStock.where();
+            responseTest += "<br>where query " + stockID;
+            whereStock = whereStock.eq("stock_id", stockID);
             responseTest += "<br>set up query " + stockID;
-            Stock results = stockDao.queryForFirst(qbStock.prepare());
+            Stock results = stockDao.queryForFirst(whereStock.prepare());
 
             responseTest += "<br>Requested Stock for Stock ID " + stockID;
 
