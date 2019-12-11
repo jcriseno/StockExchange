@@ -1,10 +1,12 @@
 import static spark.Spark.*;
 
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.SQLException;
 import java.util.*;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.dao.GenericRawResults;
@@ -78,7 +80,8 @@ public class JavaServer {
 
             if (results != null) {
                 response.status(201);
-                return results.toString();
+                ObjectMapper userMap = new ObjectMapper();
+                return userMap.writeValueAsString(results);
             } else {
                 response.status(404); // 404 Not found
                 return "Error: User " + hold + " not found";
