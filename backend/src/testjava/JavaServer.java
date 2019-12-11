@@ -70,17 +70,15 @@ public class JavaServer {
 
         get("/retrieveUserID/:user", (request, response) -> {
             String hold = request.params(":user");
-            GenericRawResults<String[]> results;
-            results = userDao.queryRaw("SELECT user_id FROM users WHERE username = " + hold);
-
-            List<String[]> resArray = results.getResults();
-            String[] fin = resArray.get(0);
+            QueryBuilder<User, String> qbUser = userDao.queryBuilder();
+            qbUser.selectColumns("user_id").where().eq("username", hold);
+            User results = userDao.queryForFirst(qbUser.prepare());
 
             responseTest += "<br>Requested User ID for Username " + hold;
 
-            if (fin[0] != null) {
+            if (results != null) {
                 response.status(201);
-                return fin[0];
+                return results.getId();
             } else {
                 response.status(404); // 404 Not found
                 return "Error: User " + hold + " not found";
