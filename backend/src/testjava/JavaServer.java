@@ -128,5 +128,17 @@ public class JavaServer {
             response.status(201); // 201 Created
             return "done! 201";
         });
+
+        get("/getStock", (request, response) -> {
+            String userID = request.queryParams("user_id");
+            String ticker = request.queryParams("ticker");
+
+            QueryBuilder<Stock, String> qbStock = stockDao.queryBuilder();
+            qbStock.where().eq("user_id", userID).and()
+            .eq("ticker", ticker);
+            Stock results = stockDao.queryForFirst(qbStock.prepare());
+
+            return results;
+        });
     }
 }
