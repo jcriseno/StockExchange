@@ -179,14 +179,14 @@ public class JavaServer {
             QueryBuilder<Stock, String> qbStock = stockDao.queryBuilder();
             qbStock.where().eq("stock_id", stockID);
             responseTest += "<br>set up query " + stockID;
-            Stock results = stockDao.queryForFirst(qbStock.prepare());
+            List<Stock> results = stockDao.query(qbStock.prepare());
 
             responseTest += "<br>Requested Stock for Stock ID " + stockID;
 
-            if (results != null) {
+            if (results.size() > 0) {
                 response.status(201);
                 ObjectMapper stockMap = new ObjectMapper();
-                return stockMap.writeValueAsString(results);
+                return stockMap.writeValueAsString(results.get(0));
             } else {
                 response.status(404); // 404 Not found
                 return "Error: Stock " + stockID + " not found";
