@@ -30,6 +30,14 @@ public class JavaServer {
             responseTest = sw.toString();
         });
 
+        exception(Exception.class, (e, request, response) -> {
+            e.printStackTrace();
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            e.printStackTrace(pw);
+            responseTest = sw.toString();
+        });
+
         port(8000);
         after((Filter) (request, response) -> {
             response.header("Access-Control-Allow-Origin", "*");
