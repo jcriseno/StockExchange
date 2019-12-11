@@ -34,8 +34,6 @@ CREATE TABLE stock(
 SELECT
     username,
     funds,
-    user.user_id,
-    stock.user_id,
     company_ticker,
     quantity
 FROM
@@ -43,8 +41,20 @@ FROM
         INNER JOIN
     stock ON stock.user_id = user.user_id;
 
+#To see what stocks a certain user has:
+SELECT
+    funds,
+    company_ticker,
+    quantity
+FROM
+    user
+        INNER JOIN
+    stock ON stock.user_id = user.user_id
+WHERE
+    username = 'UsernameOfUser';
+
 #To see what stocks are available
-SELECT * FROM stocks WHERE user_id = NULL;
+SELECT * FROM stock WHERE user_id = NULL;
 
 #To see what transactions have occurred
 SELECT * FROM transactions;
