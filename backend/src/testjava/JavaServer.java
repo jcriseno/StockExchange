@@ -166,7 +166,8 @@ public class JavaServer {
             stockDao.create(stock);
 
             response.status(201); // 201 Created
-            return "done! 201";
+            ObjectMapper stockMap = new ObjectMapper();
+            return stockMap.writeValueAsString(stock);
         });
 
         get("/getStock", (request, response) -> {
