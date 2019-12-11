@@ -77,12 +77,12 @@ public class JavaServer {
         });
 
         get("/retrieveUser/:user", (request, response) -> {
-            String hold = request.params(":user");
+            String userName = request.params(":user");
             QueryBuilder<User, String> qbUser = userDao.queryBuilder();
-            qbUser.where().eq("username", hold);
+            qbUser.where().eq("username", userName);
             User results = userDao.queryForFirst(qbUser.prepare());
 
-            responseTest += "<br>Requested User ID for Username " + hold;
+            responseTest += "<br>Requested User ID for Username " + userName;
 
             if (results != null) {
                 response.status(201);
@@ -90,7 +90,7 @@ public class JavaServer {
                 return userMap.writeValueAsString(results);
             } else {
                 response.status(404); // 404 Not found
-                return "Error: User " + hold + " not found";
+                return "Error: User " + userName + " not found";
             }
         });
     }
@@ -113,7 +113,23 @@ public class JavaServer {
     }
 
     private static void postGetCom(ConnectionSource connectionSource, Dao<Company, String> comDao) throws SQLException {
+        get("/retrieveCompany/:ticker", (request, response) -> {
+            String ticker = request.params(":ticker");
+            QueryBuilder<Company, String> qbCompany = comDao.queryBuilder();
+            qbCompany.where().eq("ticker", ticker);
+            Company results = comDao.queryForFirst(qbCompany.prepare());
 
+            responseTest += "<br>Requested Company for Company Ticker " + ticker;
+
+            if (results != null) {
+                response.status(201);
+                ObjectMapper companyMap = new ObjectMapper();
+                return companyMap.writeValueAsString(results);
+            } else {
+                response.status(404); // 404 Not found
+                return "Error: Company " + ticker + " not found";
+            }
+        });
     }
 
     private static void postGetStock(ConnectionSource connectionSource, Dao<Stock, String> stockDao) throws SQLException {
@@ -133,6 +149,41 @@ public class JavaServer {
 
             response.status(201); // 201 Created
             return "done! 201";
+        });
+
+        get("/retrieveStock/:stock", (request, response) -> {
+            String stockID = request.params(":stock");
+            QueryBuilder<Stock, String> qbUser = stockDao.queryBuilder();
+            qbUser.where().eq("stock_id", stockID);
+            Stock results = stockDao.queryForFirst(qbUser.prepare());
+
+            responseTest += "<br>Requested Stock for Stock ID " + stockID;
+
+            if (results != null) {
+                response.status(201);
+                ObjectMapper stockMap = new ObjectMapper();
+                return stockMap.writeValueAsString(results);
+            } else {
+                response.status(404); // 404 Not found
+                return "Error: Stock " + stockID + " not found";
+            }
+        });
+        get("/retrieveStocksByUser/:userid", (request, response) -> {
+            String userID = request.params(":userid");
+            QueryBuilder<Stock, String> qbUser = stockDao.queryBuilder();
+            qbUser.where().eq("user_id", userID);
+            List<Stock> results = stockDao.query(qbUser.prepare());
+
+            responseTest += "<br>Requested all stocks for User ID " + userID;
+
+            if (results != null) {
+                response.status(201);
+                ObjectMapper stocksMap = new ObjectMapper();
+                return stocksMap.writeValueAsString(results);
+            } else {
+                response.status(404); // 404 Not found
+                return "Error: User " + userID + " not found";
+            }
         });
     }
 }
