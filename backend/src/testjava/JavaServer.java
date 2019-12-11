@@ -152,6 +152,18 @@ public class JavaServer {
             return "done! 201";
         });
 
+        get("/getStock", (request, response) -> {
+            String userID = request.queryParams("user_id");
+            String ticker = request.queryParams("ticker");
+
+            QueryBuilder<Stock, String> qbStock = stockDao.queryBuilder();
+            qbStock.where().eq("user_id", userID).and()
+            .eq("ticker", ticker);
+            Stock results = stockDao.queryForFirst(qbStock.prepare());
+
+            return results;
+        });
+
         get("/retrieveStock/:stock", (request, response) -> {
             String stockID = request.params(":stock");
             responseTest += "<br>GOt params " + stockID;
