@@ -8,10 +8,10 @@ public class Company {
 
     }
 
-    @DatabaseField(id = true)
+    @DatabaseField(id = true, columnName = "company_ticker")
     private String ticker;
 
-    @DatabaseField
+    @DatabaseField(columnName = "company_name")
     private String name;
 
     public String getTicker() {
