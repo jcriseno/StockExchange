@@ -96,15 +96,17 @@ public class JavaServer {
     }
 
     private static void postGetTxn(ConnectionSource connectionSource, Dao<Transactions, String> txnDao) throws SQLException {
-        get("/getTransaction/:id", (request, response) -> {
-            Transactions txn = null;
-            try {
-                txn = txnDao.queryForId(request.params(":id"));
-            } catch (SQLException e) {
-            }
-            if (txn != null) {
+        get("/getTransaction/:user_id", (request, response) -> {
+            String user_id = ":user_id";
+
+            QueryBuilder<Transactions, String> qbTxn = txnDao.queryBuilder();
+            List<Transactions> results = qbTxn.where().eq("user_id", user_id).query();
+
+
+            if (results != null) {
                 response.status(202);
-                return "Transaction: " + txn;
+                ObjectMapper txnMap = new ObjectMapper();
+                return txnMap.writeValueAsString(results);
             } else {
                 response.status(404); // 404 Not found
                 return "404: User not found";
@@ -151,9 +153,9 @@ public class JavaServer {
             return "done! 201";
         });
 
-        get("/getStock", (request, response) -> {
-            String userID = request.queryParams("user_id");
-            String ticker = request.queryParams("ticker");
+        get("/getStock/:user_id/:ticker", (request, response) -> {
+            String userID = request.params(":user_id");
+            String ticker = request.params(":ticker");
 
             QueryBuilder<Stock, String> qbStock = stockDao.queryBuilder();
             qbStock.where().eq("user_id", userID).and()
