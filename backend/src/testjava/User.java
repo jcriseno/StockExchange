@@ -31,4 +31,16 @@ public class User {
     public double getFunds() {return this.funds;}
 
     public void setFunds(double funds) {this.funds = funds;}
+
+    // Creating toString
+    @Override
+    public String toString()
+    {
+        return "User [user_id="
+                + user_id
+                + ", username="
+                + username
+                + ", funds="
+                + funds + "]";
+    }
 }

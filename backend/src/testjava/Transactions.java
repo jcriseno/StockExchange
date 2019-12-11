@@ -13,11 +13,11 @@ public class Transactions {
     @DatabaseField(generatedId = true)
     private int transaction_id;
 
-    @DatabaseField(foreign = true, columnName = "user_id")
-    private User user;
+    @DatabaseField(columnName = "user_id")
+    private int user_id;
 
-    @DatabaseField(foreign = true, columnName = "ticker")
-    private Company company;
+    @DatabaseField(columnName = "ticker")
+    private String ticker;
 
     @DatabaseField
     private Timestamp timestamp;
@@ -30,12 +30,12 @@ public class Transactions {
 
     // GETTERS AND SETTERS
 
-    public User getUser() {
-        return user;
+    public int getUser_id() {
+        return user_id;
     }
 
-    public void setUser() {
-        this.user = user;
+    public void setUser_id(int user_id) {
+        this.user_id = user_id;
     }
 
     public int getTransaction_id() {
@@ -46,12 +46,12 @@ public class Transactions {
         this.transaction_id = transaction_id;
     }
 
-    public Company getCompany() {
-        return company;
+    public String getCompany_id() {
+        return ticker;
     }
 
-    public void setCompany(Company company) {
-        this.company = company;
+    public void setCompany_id(String ticker) {
+        this.ticker = ticker;
     }
     public Timestamp getTimestamp() {
         return timestamp;
