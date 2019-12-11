@@ -16,7 +16,7 @@ public class Transactions {
     @DatabaseField(columnName = "user_id")
     private int user_id;
 
-    @DatabaseField(columnName = "ticker")
+    @DatabaseField(columnName = "company_ticker")
     private String ticker;
 
     @DatabaseField

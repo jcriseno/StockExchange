@@ -12,6 +12,7 @@ import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.dao.GenericRawResults;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.Where;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 import spark.Filter;
@@ -20,6 +21,23 @@ public class JavaServer {
     private static String responseTest = "test passed!";
 
     public static void main(String[] args) {
+        initExceptionHandler((e) -> {
+            e.printStackTrace();
+
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            e.printStackTrace(pw);
+            responseTest = sw.toString();
+        });
+
+        exception(Exception.class, (e, request, response) -> {
+            e.printStackTrace();
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            e.printStackTrace(pw);
+            responseTest = sw.toString();
+        });
+
         port(8000);
         after((Filter) (request, response) -> {
             response.header("Access-Control-Allow-Origin", "*");
@@ -118,7 +136,7 @@ public class JavaServer {
         get("/retrieveCompany/:ticker", (request, response) -> {
             String ticker = request.params(":ticker");
             QueryBuilder<Company, String> qbCompany = comDao.queryBuilder();
-            qbCompany.where().eq("ticker", ticker);
+            qbCompany.where().eq("company_ticker", ticker);
             Company results = comDao.queryForFirst(qbCompany.prepare());
 
             responseTest += "<br>Requested Company for Company Ticker " + ticker;
@@ -147,19 +165,20 @@ public class JavaServer {
             stock.setCompany(ticker);
             stock.setQuantity(Integer.parseInt(quantity));
 
-            stockDao.create(stock);
+            stockDao.createOrUpdate(stock);
 
             response.status(201); // 201 Created
-            return "done! 201";
+            ObjectMapper stockMap = new ObjectMapper();
+            return stockMap.writeValueAsString(stock);
         });
 
-        get("/getStock/:user_id/:ticker", (request, response) -> {
-            String userID = request.params(":user_id");
-            String ticker = request.params(":ticker");
+        get("/retrieveStocksByTicker/:user_id/:ticker", (request, response) -> {
+            String userID = request.queryParams("user_id");
+            String ticker = request.queryParams("ticker");
 
             QueryBuilder<Stock, String> qbStock = stockDao.queryBuilder();
             qbStock.where().eq("user_id", userID).and()
-            .eq("ticker", ticker);
+            .eq("company_ticker", ticker);
             Stock results = stockDao.queryForFirst(qbStock.prepare());
 
             return results;
@@ -167,19 +186,16 @@ public class JavaServer {
 
         get("/retrieveStock/:stock", (request, response) -> {
             String stockID = request.params(":stock");
-            responseTest += "<br>GOt params " + stockID;
             QueryBuilder<Stock, String> qbStock = stockDao.queryBuilder();
-            responseTest += "<br>build query " + stockID;
             qbStock.where().eq("stock_id", stockID);
-            responseTest += "<br>set up query " + stockID;
-            Stock results = stockDao.queryForFirst(qbStock.prepare());
+            List<Stock> results = stockDao.query(qbStock.prepare());
 
             responseTest += "<br>Requested Stock for Stock ID " + stockID;
 
-            if (results != null) {
+            if (results.size() > 0) {
                 response.status(201);
                 ObjectMapper stockMap = new ObjectMapper();
-                return stockMap.writeValueAsString(results);
+                return stockMap.writeValueAsString(results.get(0));
             } else {
                 response.status(404); // 404 Not found
                 return "Error: Stock " + stockID + " not found";
