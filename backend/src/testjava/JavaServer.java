@@ -68,10 +68,10 @@ public class JavaServer {
             return "done! 201";
         });
 
-        get("/retrieveUserID/:user", (request, response) -> {
+        get("/retrieveUser/:user", (request, response) -> {
             String hold = request.params(":user");
             QueryBuilder<User, String> qbUser = userDao.queryBuilder();
-            qbUser.selectColumns("user_id").where().eq("username", hold);
+            qbUser.where().eq("username", hold);
             User results = userDao.queryForFirst(qbUser.prepare());
 
             responseTest += "<br>Requested User ID for Username " + hold;
