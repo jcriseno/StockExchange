@@ -1,5 +1,8 @@
 import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.table.DatabaseTable;
+
+import java.util.List;
 
 @DatabaseTable(tableName = "stock")
 public class Stock {
@@ -52,5 +55,4 @@ public class Stock {
     public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
-
 }
