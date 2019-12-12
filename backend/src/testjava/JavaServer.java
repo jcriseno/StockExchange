@@ -90,8 +90,8 @@ public class JavaServer {
                 user.setFunds(funds);
 
                 UpdateBuilder<User, String> ubUser = userDao.updateBuilder();
-                ubUser.where().eq("user_id", user.getId());
-                ubUser.updateColumnValue("funds", funds);
+                ubUser.where().eq("user_id", String.valueOf(user.getId()));
+                ubUser.updateColumnValue("funds", deposit);
                 ubUser.update();
             } else {
                 user = new User();
