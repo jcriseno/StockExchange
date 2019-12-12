@@ -4,6 +4,8 @@ import static spark.Spark.*;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -248,7 +250,11 @@ public class JavaServer {
     }
 
     private static void logTransaction(int quantity, double buying_price, int user_id, String ticker) throws SQLException {
+        LocalDateTime newDT = LocalDateTime.now();
+        Timestamp newTime = Timestamp.valueOf(newDT);
+
         Transactions newTransaction = new Transactions();
+        newTransaction.setTimestamp(newTime);
         newTransaction.setQuantity(quantity);
         newTransaction.setBuying_price(buying_price);
         newTransaction.setUser_id(user_id);
