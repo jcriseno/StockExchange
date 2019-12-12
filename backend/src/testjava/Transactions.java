@@ -19,7 +19,7 @@ public class Transactions {
     @DatabaseField(columnName = "company_ticker")
     private String ticker;
 
-    @DatabaseField
+    @DatabaseField(columnName = "time")
     private Timestamp timestamp;
 
     @DatabaseField

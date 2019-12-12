@@ -185,8 +185,8 @@ public class JavaServer {
 
             stockDao.createOrUpdate(stock);
 
-            //int buying_price = 0;
-            //logTransaction(stock.getQuantity(), buying_price, stock.getUser(), stock.getCompany());
+            int buying_price = 0;
+            logTransaction(stock.getQuantity(), buying_price, stock.getUser(), stock.getCompany());
 
             response.status(201); // 201 Created
             ObjectMapper stockMap = new ObjectMapper();
