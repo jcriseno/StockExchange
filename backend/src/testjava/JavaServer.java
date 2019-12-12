@@ -109,8 +109,8 @@ public class JavaServer {
                 List<Stock> resultList = stockDao.query(qbStocks.prepare());
 
                 UserStockResponse usr = new UserStockResponse();
-                usr.user = results;
-                usr.stocks = resultList;
+                usr.setUser(results);
+                usr.setStocks(resultList);
 
                 ObjectMapper userMap = new ObjectMapper();
                 return userMap.writeValueAsString(usr);
@@ -239,8 +239,8 @@ public class JavaServer {
                 List<Stock> resultList = stockDao.query(qbStocks.prepare());
 
                 UserStockResponse sr = new UserStockResponse();
-                sr.user = user;
-                sr.stocks = resultList;
+                sr.setUser(user);
+                sr.setStocks(resultList);
 
                 response.status(201); // 201 Created
                 ObjectMapper userMap = new ObjectMapper();
