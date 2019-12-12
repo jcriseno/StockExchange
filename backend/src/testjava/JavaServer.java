@@ -176,6 +176,8 @@ public class JavaServer {
             String stockID = request.queryParams("stock_id");
             String ticker = request.queryParams("ticker");
             String quantity = request.queryParams("quantity");
+            String pricePer = request.queryParams("price");
+            double buying_price = Double.valueOf(pricePer);
 
             Stock stock = new Stock();
             stock.setUser(Integer.parseInt(userID));
@@ -185,7 +187,7 @@ public class JavaServer {
 
             stockDao.createOrUpdate(stock);
 
-            int buying_price = 0;
+
             logTransaction(stock.getQuantity(), buying_price, stock.getUser(), stock.getCompany());
 
             response.status(201); // 201 Created
