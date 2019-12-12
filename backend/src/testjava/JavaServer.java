@@ -89,10 +89,7 @@ public class JavaServer {
             if(user != null) {
                 user.setFunds(funds);
 
-                UpdateBuilder<User, String> ubUser = userDao.updateBuilder();
-                ubUser.where().eq("user_id", String.valueOf(user.getId()));
-                ubUser.updateColumnValue("funds", deposit);
-                ubUser.update();
+                updateUserColumn("funds", String.valueOf(user.getFunds()), user.getId());
             } else {
                 user = new User();
                 user.setUsername(userName);
@@ -205,7 +202,7 @@ public class JavaServer {
             if(stock != null) {
                 stock.setQuantity(stock.getQuantity() + Integer.parseInt(quantity));
 
-                stockDao.update(stock);
+                updateStockColumn("quantity", quantity, stock.getStock_id());
             } else {
                 stock = new Stock();
                 stock.setUser(Integer.parseInt(userID));
@@ -220,8 +217,8 @@ public class JavaServer {
             response.status(201); // 201 Created
 
             User user = getUserByID(Integer.parseInt(userID));
-            user.setFunds(user.getFunds() - buying_price * Integer.parseInt(pricePer));
-            userDao.update(user);
+            user.setFunds(user.getFunds() - buying_price * Integer.parseInt(quantity));
+            updateUserColumn("funds", String.valueOf(user.getFunds()), user.getId());
 
             List<Stock> resultStocks = getStocksByUser(user.getId());
 
@@ -244,22 +241,22 @@ public class JavaServer {
             qbStock.where().eq("user_id", userID).and()
                     .eq("company_ticker", ticker).and()
                     .ge("quantity", quantity);
-            Stock results = stockDao.queryForFirst(qbStock.prepare());
+            Stock stock = stockDao.queryForFirst(qbStock.prepare());
 
-            if(results != null) {
-                logTransaction(results.getQuantity(), selling_price, results.getUser(), results.getCompany());
+            if(stock != null) {
+                logTransaction(stock.getQuantity(), selling_price, stock.getUser(), stock.getCompany());
 
-                results.setQuantity(results.getQuantity() - Integer.parseInt(quantity));
-                if(results.getQuantity() <= 0) {
-                    stockDao.delete(results);
+                stock.setQuantity(stock.getQuantity() - Integer.parseInt(quantity));
+                if(stock.getQuantity() <= 0) {
+                    stockDao.delete(stock);
                 } else {
-                    stockDao.update(results);
+                    updateStockColumn("quantity", quantity, stock.getStock_id());
                 }
 
                 User user = getUserByID(Integer.parseInt(userID));
                 user.setFunds(user.getFunds() + selling_price * Integer.parseInt(quantity));
 
-                userDao.update(user);
+                updateUserColumn("funds", String.valueOf(user.getFunds()), user.getId());
 
                 List<Stock> resultStocks = getStocksByUser(Integer.parseInt(userID));
 
@@ -354,5 +351,19 @@ public class JavaServer {
         QueryBuilder<Stock, String> qbStocks = stockDao.queryBuilder();
         qbStocks.where().eq("user_id", String.valueOf(userID));
         return stockDao.query(qbStocks.prepare());
+    }
+
+    public static void updateStockColumn(String columnName, String columnValue, int stockID) throws SQLException {
+        UpdateBuilder<Stock, String> ubStock = stockDao.updateBuilder();
+        ubStock.where().eq("stock_id", String.valueOf(stockID));
+        ubStock.updateColumnValue(columnName, columnValue);
+        ubStock.update();
+    }
+
+    public static void updateUserColumn(String columnName, String columnValue, int userID) throws SQLException {
+        UpdateBuilder<User, String> ubUser = userDao.updateBuilder();
+        ubUser.where().eq("user_id", String.valueOf(userID));
+        ubUser.updateColumnValue(columnName, columnValue);
+        ubUser.update();
     }
 }
