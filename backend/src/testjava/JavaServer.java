@@ -195,6 +195,55 @@ public class JavaServer {
             return stockMap.writeValueAsString(stock);
         });
 
+        post("/sell", (request, response) -> {
+            String userID = request.queryParams("user_id");
+            String stockID = request.queryParams("stock_id");
+            String ticker = request.queryParams("ticker");
+            String quantity = request.queryParams("quantity");
+            String pricePer = request.queryParams("price");
+            double selling_price = Double.valueOf(pricePer);
+
+            QueryBuilder<Stock, String> qbStock = stockDao.queryBuilder();
+            qbStock.where().eq("user_id", userID).and()
+                    .eq("company_ticker", ticker).and()
+                    .ge("quantity", quantity);
+            Stock results = stockDao.queryForFirst(qbStock.prepare());
+
+            if(results != null) {
+                logTransaction(results.getQuantity(), selling_price, results.getUser(), results.getCompany());
+
+                results.setQuantity(results.getQuantity() - Integer.parseInt(quantity));
+                if(results.getQuantity() <= 0) {
+                    stockDao.delete(results);
+                } else {
+                    stockDao.update(results);
+                }
+
+                QueryBuilder<User, String> qbUser = userDao.queryBuilder();
+                qbUser.where().eq("user_id", userID);
+
+                User user = userDao.queryForFirst(qbUser.prepare());
+                user.setFunds(user.getFunds() + selling_price * Integer.parseInt(quantity));
+
+                userDao.update(user);
+
+                QueryBuilder<Stock, String> qbStocks = stockDao.queryBuilder();
+                qbUser.where().eq("user_id", userID);
+                List<Stock> resultList = stockDao.query(qbStocks.prepare());
+
+                sellResponse sr = new sellResponse();
+                sr.user = user;
+                sr.stocks = resultList;
+
+                response.status(201); // 201 Created
+                ObjectMapper userMap = new ObjectMapper();
+                return userMap.writeValueAsString(sr);
+            } else {
+                response.status(404);
+                return "Error: Stock with that quantity/company/user not found.";
+            }
+        });
+
         get("/retrieveStocksByTicker/:user_id/:ticker", (request, response) -> {
             String userID = request.queryParams("user_id");
             String ticker = request.queryParams("ticker");
