@@ -181,7 +181,7 @@ public class JavaServer {
             String ticker = request.queryParams("ticker");
             String quantity = request.queryParams("quantity");
             String pricePer = request.queryParams("price");
-            double buying_price = Double.valueOf(pricePer);
+            double buying_price = Double.parseDouble(pricePer);
 
             Stock stock = new Stock();
             stock.setUser(Integer.parseInt(userID));
@@ -194,8 +194,19 @@ public class JavaServer {
             logTransaction(stock.getQuantity(), buying_price, stock.getUser(), stock.getCompany());
 
             response.status(201); // 201 Created
+
+            User user = getUserByID(Integer.parseInt(userID));
+            user.setFunds(user.getFunds() - buying_price * Integer.parseInt(pricePer));
+            userDao.update(user);
+
+            List<Stock> resultStocks = getStocksByUser(user.getId());
+
+            UserStockResponse usr = new UserStockResponse();
+            usr.setUser(user);
+            usr.setStocks(resultStocks);
+
             ObjectMapper stockMap = new ObjectMapper();
-            return stockMap.writeValueAsString(stock);
+            return stockMap.writeValueAsString(usr);
         });
 
         post("/sell", (request, response) -> {
@@ -203,7 +214,7 @@ public class JavaServer {
             String ticker = request.queryParams("ticker");
             String quantity = request.queryParams("quantity");
             String pricePer = request.queryParams("price");
-            double selling_price = Double.valueOf(pricePer);
+            double selling_price = Double.parseDouble(pricePer);
 
             QueryBuilder<Stock, String> qbStock = stockDao.queryBuilder();
             qbStock.where().eq("user_id", userID).and()
@@ -312,16 +323,12 @@ public class JavaServer {
     public static User getUserByID(int userID) throws SQLException {
         QueryBuilder<User, String> qbUser = userDao.queryBuilder();
         qbUser.where().eq("user_id", String.valueOf(userID));
-        User user = userDao.queryForFirst(qbUser.prepare());
-
-        return user;
+        return userDao.queryForFirst(qbUser.prepare());
     }
 
     public static List<Stock> getStocksByUser(int userID) throws SQLException {
         QueryBuilder<Stock, String> qbStocks = stockDao.queryBuilder();
         qbStocks.where().eq("user_id", String.valueOf(userID));
-        List<Stock> resultList = stockDao.query(qbStocks.prepare());
-
-        return resultList;
+        return stockDao.query(qbStocks.prepare());
     }
 }
