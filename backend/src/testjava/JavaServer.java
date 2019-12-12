@@ -13,6 +13,7 @@ import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.UpdateBuilder;
 import com.j256.ormlite.table.TableUtils;
 
 public class JavaServer {
@@ -87,7 +88,11 @@ public class JavaServer {
             User user = userDao.queryForFirst(qbUser.prepare());
             if(user != null) {
                 user.setFunds(funds);
-                userDao.update(user);
+
+                UpdateBuilder<User, String> ubUser = userDao.updateBuilder();
+                ubUser.where().eq("user_id", user.getId());
+                ubUser.updateColumnValue("funds", funds);
+                ubUser.update();
             } else {
                 user = new User();
                 user.setUsername(userName);
