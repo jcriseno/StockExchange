@@ -77,16 +77,24 @@ public class JavaServer {
 
     private static void postGetUser() throws SQLException {
         post("/users", (request, response) -> {
-            String username = request.queryParams("username");
+            String userName = request.queryParams("username");
             String deposit = request.queryParams("funds");
-            Double funds = Double.valueOf(deposit);
+            double funds = Double.parseDouble(deposit);
 
+            QueryBuilder<User, String> qbUser = userDao.queryBuilder();
+            qbUser.where().eq("username", userName);
 
-            User user = new User();
-            user.setUsername(username);
-            user.setFunds(funds);
+            User user = userDao.queryForFirst(qbUser.prepare());
+            if(user != null) {
+                user.setFunds(funds);
+                userDao.update(user);
+            } else {
+                user = new User();
+                user.setUsername(userName);
+                user.setFunds(funds);
 
-            userDao.createOrUpdate(user);
+                userDao.create(user);
+            }
 
             response.status(201); // 201 Created
             ObjectMapper userMap = new ObjectMapper();
@@ -183,13 +191,24 @@ public class JavaServer {
             String pricePer = request.queryParams("price");
             double buying_price = Double.parseDouble(pricePer);
 
-            Stock stock = new Stock();
-            stock.setUser(Integer.parseInt(userID));
-            stock.setCompany(ticker);
-            stock.setQuantity(Integer.parseInt(quantity));
+            QueryBuilder<Stock, String> qbStock = stockDao.queryBuilder();
+            qbStock.where().eq("user_id", userID).and()
+                    .eq("company_ticker", ticker).and()
+                    .ge("quantity", quantity);
+            Stock stock = stockDao.queryForFirst(qbStock.prepare());
 
-            stockDao.createOrUpdate(stock);
+            if(stock != null) {
+                stock.setQuantity(stock.getQuantity() + Integer.parseInt(quantity));
 
+                stockDao.update(stock);
+            } else {
+                stock = new Stock();
+                stock.setUser(Integer.parseInt(userID));
+                stock.setCompany(ticker);
+                stock.setQuantity(Integer.parseInt(quantity));
+
+                stockDao.create(stock);
+            }
 
             logTransaction(stock.getQuantity(), buying_price, stock.getUser(), stock.getCompany());
 
