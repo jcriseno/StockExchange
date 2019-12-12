@@ -202,7 +202,7 @@ public class JavaServer {
             if(stock != null) {
                 stock.setQuantity(stock.getQuantity() + Integer.parseInt(quantity));
 
-                updateStockColumn("quantity", quantity, stock.getStock_id());
+                updateStockColumn("quantity", String.valueOf(stock.getQuantity()), stock.getStock_id());
             } else {
                 stock = new Stock();
                 stock.setUser(Integer.parseInt(userID));
@@ -250,7 +250,7 @@ public class JavaServer {
                 if(stock.getQuantity() <= 0) {
                     stockDao.delete(stock);
                 } else {
-                    updateStockColumn("quantity", quantity, stock.getStock_id());
+                    updateStockColumn("quantity", String.valueOf(stock.getQuantity()), stock.getStock_id());
                 }
 
                 User user = getUserByID(Integer.parseInt(userID));
