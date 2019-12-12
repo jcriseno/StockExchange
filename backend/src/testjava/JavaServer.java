@@ -51,7 +51,7 @@ public class JavaServer {
             return responseTest;
         });
 
-        String databaseUrl = "jdbc:mysql://ec2-184-72-87-247.compute-1.amazonaws.com/stockexchange";
+        String databaseUrl = "jdbc:mysql://ec2-54-175-158-115.compute-1.amazonaws.com/stockexchange";
 
         try {
             connectionSource = new JdbcConnectionSource(databaseUrl);
@@ -244,7 +244,7 @@ public class JavaServer {
             Stock stock = stockDao.queryForFirst(qbStock.prepare());
 
             if(stock != null) {
-                logTransaction(stock.getQuantity(), selling_price, stock.getUser(), stock.getCompany());
+                logTransaction(stock.getQuantity(), -1 * selling_price, stock.getUser(), stock.getCompany());
 
                 stock.setQuantity(stock.getQuantity() - Integer.parseInt(quantity));
                 if(stock.getQuantity() <= 0) {
