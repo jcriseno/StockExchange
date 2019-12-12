@@ -15,7 +15,7 @@ public class Company {
     private String name;
 
     public String getTicker() {
-        return ticker;
+        return this.ticker;
     }
 
     public void setTicker(String ticker) {
@@ -23,7 +23,7 @@ public class Company {
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public void setName(String name) {

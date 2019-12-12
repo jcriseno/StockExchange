@@ -12,7 +12,7 @@ public class Stock {
     private int stock_id;
 
     @DatabaseField(columnName = "user_id")
-    private String user;
+    private int user_id;
 
     @DatabaseField(columnName = "company_ticker")
     private String company;
@@ -22,19 +22,19 @@ public class Stock {
 
 
     public int getStock_id() {
-        return stock_id;
+        return this.stock_id;
     }
 
     public void setStock_id(int id) {
         this.stock_id = id;
     }
 
-    public String getUser() {
-        return user;
+    public int getUser() {
+        return this.user_id;
     }
 
-    public void setUser(String user) {
-        this.user = user;
+    public void setUser(int user_id) {
+        this.user_id = user_id;
     }
 
     public String getCompany() {
@@ -46,7 +46,7 @@ public class Stock {
     }
 
     public int getQuantity() {
-        return quantity;
+        return this.quantity;
     }
 
     public void setQuantity(int quantity) {

@@ -31,7 +31,7 @@ public class Transactions {
     // GETTERS AND SETTERS
 
     public int getUser_id() {
-        return user_id;
+        return this.user_id;
     }
 
     public void setUser_id(int user_id) {
@@ -39,7 +39,7 @@ public class Transactions {
     }
 
     public int getTransaction_id() {
-        return transaction_id;
+        return this.transaction_id;
     }
 
     public void setTransaction_id(int transaction_id) {
@@ -47,14 +47,14 @@ public class Transactions {
     }
 
     public String getCompany_id() {
-        return ticker;
+        return this.ticker;
     }
 
     public void setCompany_id(String ticker) {
         this.ticker = ticker;
     }
     public Timestamp getTimestamp() {
-        return timestamp;
+        return this.timestamp;
     }
 
     public void setTimestamp(Timestamp timestamp) {
@@ -62,7 +62,7 @@ public class Transactions {
     }
 
     public int getQuantity() {
-        return quantity;
+        return this.quantity;
     }
 
     public void setQuantity(int quantity) {
@@ -70,7 +70,7 @@ public class Transactions {
     }
 
     public double getBuying_price() {
-        return buying_price;
+        return this.buying_price;
     }
 
     public void setBuying_price(double buying_price) {

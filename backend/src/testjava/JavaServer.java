@@ -9,16 +9,19 @@ import java.util.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
-import com.j256.ormlite.dao.GenericRawResults;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.stmt.QueryBuilder;
-import com.j256.ormlite.stmt.Where;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 import spark.Filter;
 
 public class JavaServer {
     private static String responseTest = "test passed!";
+    private static Dao<User, String> userDao;
+    private static Dao<Transactions, String> txnDao;
+    private static Dao<Stock, String> stockDao;
+    private static Dao<Company, String> comDao;
+    private static JdbcConnectionSource connectionSource;
 
     public static void main(String[] args) {
         initExceptionHandler((e) -> {
@@ -39,7 +42,7 @@ public class JavaServer {
         });
 
         port(8000);
-        after((Filter) (request, response) -> {
+        after((request, response) -> {
             response.header("Access-Control-Allow-Origin", "*");
             response.header("Access-Control-Allow-Methods", "GET, POST");
         });
@@ -49,15 +52,10 @@ public class JavaServer {
 
         String databaseUrl = "jdbc:mysql://ec2-184-72-87-247.compute-1.amazonaws.com/stockexchange";
 
-        ConnectionSource connectionSource = null;
-        Dao<User, String> userDao;
-        Dao<Transactions, String> txnDao;
-        Dao<Stock, String> stockDao;
-        Dao<Company, String> comDao;
         try {
             connectionSource = new JdbcConnectionSource(databaseUrl);
-            ((JdbcConnectionSource) connectionSource).setUsername("root");
-            ((JdbcConnectionSource) connectionSource).setPassword("lart2456");
+            connectionSource.setUsername("root");
+            connectionSource.setPassword("lart2456");
 
             TableUtils.createTableIfNotExists(connectionSource, User.class);
             userDao = DaoManager.createDao(connectionSource, User.class);
@@ -65,10 +63,10 @@ public class JavaServer {
             stockDao = DaoManager.createDao(connectionSource, Stock.class);
             comDao = DaoManager.createDao(connectionSource, Company.class);
 
-            postGetUser(connectionSource, userDao);
-            postGetTxn(connectionSource, txnDao);
-            postGetCom(connectionSource, comDao);
-            postGetStock(connectionSource, stockDao);
+            postGetUser();
+            postGetTxn();
+            postGetCom();
+            postGetStock();
         } catch (SQLException e) {
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
@@ -77,11 +75,12 @@ public class JavaServer {
         }
     }
 
-    private static void postGetUser(ConnectionSource connectionSource, Dao<User, String> userDao) throws SQLException {
+    private static void postGetUser() throws SQLException {
         post("/users", (request, response) -> {
             String username = request.queryParams("username");
             String deposit = request.queryParams("funds");
             Double funds = Double.valueOf(deposit);
+
 
             User user = new User();
             user.setUsername(username);
@@ -113,7 +112,7 @@ public class JavaServer {
         });
     }
 
-    private static void postGetTxn(ConnectionSource connectionSource, Dao<Transactions, String> txnDao) throws SQLException {
+    private static void postGetTxn() throws SQLException {
         get("/getTransaction/:user_id", (request, response) -> {
             String user_id = ":user_id";
 
@@ -149,7 +148,7 @@ public class JavaServer {
         });
     }
 
-    private static void postGetCom(ConnectionSource connectionSource, Dao<Company, String> comDao) throws SQLException {
+    private static void postGetCom() throws SQLException {
         get("/retrieveCompany/:ticker", (request, response) -> {
             String ticker = request.params(":ticker");
             QueryBuilder<Company, String> qbCompany = comDao.queryBuilder();
@@ -169,7 +168,7 @@ public class JavaServer {
         });
     }
 
-    private static void postGetStock(ConnectionSource connectionSource, Dao<Stock, String> stockDao) throws SQLException {
+    private static void postGetStock() throws SQLException {
         post("/purchase", (request, response) -> {
             String userID = request.queryParams("user_id");
             String stockID = request.queryParams("stock_id");
@@ -177,12 +176,15 @@ public class JavaServer {
             String quantity = request.queryParams("quantity");
 
             Stock stock = new Stock();
-            stock.setUser(userID);
+            stock.setUser(Integer.parseInt(userID));
             stock.setStock_id(Integer.parseInt(stockID));
             stock.setCompany(ticker);
             stock.setQuantity(Integer.parseInt(quantity));
 
             stockDao.createOrUpdate(stock);
+
+            int buying_price = 0;
+            logTransaction(stock.getQuantity(), buying_price, stock.getUser(), stock.getCompany());
 
             response.status(201); // 201 Created
             ObjectMapper stockMap = new ObjectMapper();
@@ -198,26 +200,34 @@ public class JavaServer {
             .eq("company_ticker", ticker);
             Stock results = stockDao.queryForFirst(qbStock.prepare());
 
-            return results;
+            if (results != null) {
+                response.status(201);
+                ObjectMapper stocksMap = new ObjectMapper();
+                return stocksMap.writeValueAsString(results);
+            } else {
+                response.status(404); // 404 Not found
+                return "Error: Stock with " + userID + " and ticker " + ticker + " not found";
+            }
         });
 
         get("/retrieveStock/:stock", (request, response) -> {
             String stockID = request.params(":stock");
             QueryBuilder<Stock, String> qbStock = stockDao.queryBuilder();
             qbStock.where().eq("stock_id", stockID);
-            List<Stock> results = stockDao.query(qbStock.prepare());
+            Stock results = stockDao.queryForFirst(qbStock.prepare());
 
             responseTest += "<br>Requested Stock for Stock ID " + stockID;
 
-            if (results.size() > 0) {
+            if (results != null) {
                 response.status(201);
                 ObjectMapper stockMap = new ObjectMapper();
-                return stockMap.writeValueAsString(results.get(0));
+                return stockMap.writeValueAsString(results);
             } else {
                 response.status(404); // 404 Not found
                 return "Error: Stock " + stockID + " not found";
             }
         });
+
         get("/retrieveStocksByUser/:userid", (request, response) -> {
             String userID = request.params(":userid");
             QueryBuilder<Stock, String> qbUser = stockDao.queryBuilder();
@@ -237,8 +247,13 @@ public class JavaServer {
         });
     }
 
+    private static void logTransaction(int quantity, double buying_price, int user_id, String ticker) throws SQLException {
+        Transactions newTransaction = new Transactions();
+        newTransaction.setQuantity(quantity);
+        newTransaction.setBuying_price(buying_price);
+        newTransaction.setUser_id(user_id);
+        newTransaction.setCompany_id(ticker);
 
-
-
-
+        txnDao.create(newTransaction);
+    }
 }
