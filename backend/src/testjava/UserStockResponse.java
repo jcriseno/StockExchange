@@ -1,6 +1,6 @@
 import java.util.List;
 
-public class sellResponse {
+public class UserStockResponse {
     User user;
     List<Stock> stocks;
 }

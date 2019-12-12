@@ -13,9 +13,7 @@ import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.stmt.QueryBuilder;
-import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
-import spark.Filter;
 
 public class JavaServer {
     private static String responseTest = "test passed!";
@@ -101,12 +99,21 @@ public class JavaServer {
             qbUser.where().eq("username", userName);
             User results = userDao.queryForFirst(qbUser.prepare());
 
-            responseTest += "<br>Requested User ID for Username " + userName;
+            responseTest += "<br>Requested login for Username " + userName;
 
             if (results != null) {
                 response.status(201);
+
+                QueryBuilder<Stock, String> qbStocks = stockDao.queryBuilder();
+                qbUser.where().eq("user_id", results.getId());
+                List<Stock> resultList = stockDao.query(qbStocks.prepare());
+
+                UserStockResponse usr = new UserStockResponse();
+                usr.user = results;
+                usr.stocks = resultList;
+
                 ObjectMapper userMap = new ObjectMapper();
-                return userMap.writeValueAsString(results);
+                return userMap.writeValueAsString(usr);
             } else {
                 response.status(404); // 404 Not found
                 return "Error: User " + userName + " not found";
@@ -231,7 +238,7 @@ public class JavaServer {
                 qbUser.where().eq("user_id", userID);
                 List<Stock> resultList = stockDao.query(qbStocks.prepare());
 
-                sellResponse sr = new sellResponse();
+                UserStockResponse sr = new UserStockResponse();
                 sr.user = user;
                 sr.stocks = resultList;
 
